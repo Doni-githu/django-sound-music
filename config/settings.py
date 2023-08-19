@@ -27,9 +27,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
     'rest_framework',
     'drf_yasg',
+    
     'src.oauth',
+    'src.audio_library',
+    
+    
     'django.contrib.sites',
     'social_django'
 ]

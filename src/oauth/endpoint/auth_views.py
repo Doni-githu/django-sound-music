@@ -22,7 +22,7 @@ def google_auth(req):
     google_data = serializers.GoogleAuth(data=req.data)
     if google_data.is_valid():
         token = google.check_google_auth(google_data.data)
-        return  Response(token)
+        return Response(token)
     else:
         return AuthenticationFailed(code=403, detail='Bad data Google')
 
