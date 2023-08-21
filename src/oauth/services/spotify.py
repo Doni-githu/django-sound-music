@@ -23,7 +23,6 @@ def get_spotify_jwt(code:str) -> Optional[str]:
     }
     
     res = requests.post(url, data=data, headers=headers)
-    print(res.json())
     if res.status_code == 200:
         r = res.json()
         return r.get('access_token')
@@ -56,4 +55,5 @@ def spotify_auth(code:str):
     else:
         raise exceptions.AuthenticationFailed(code=403, detail='Bad token Spotify')
     
-# token spotify user - eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2OTI1MjgwMjAsInN1YiI6ImFjY2VzcyJ9.Ao09CA8Xw-HIVPiXi2rwC_prl8YSW5bKa5YYqRHotns
+# token spotify user -
+# eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2OTI1MjgwMjAsInN1YiI6ImFjY2VzcyJ9.Ao09CA8Xw-HIVPiXi2rwC_prl8YSW5bKa5YYqRHotns

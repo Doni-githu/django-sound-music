@@ -7,7 +7,7 @@ from datetime import datetime
 
 class AuthBackend(authentication.BaseAuthentication):
     authentication_header_predix = "Token"
-    
+        
     def authenticate(self, request, token=None, **kwargs) -> Optional[tuple]:
         auth_header = authentication.get_authorization_header(request).split()
         if not auth_header or auth_header[0].lower() != b'token':

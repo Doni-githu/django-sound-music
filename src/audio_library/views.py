@@ -82,7 +82,7 @@ class PlayListView(MixidSerializer, viewsets.ModelViewSet):
         instance.delete()
         
 class TracksListView(generics.ListAPIView):
-    queryset = models.Track.objects.all()
+    queryset = models.Track.objects.filter(album__private=False, private=False)
     serializer_class = serializers.AuthorTracksSerializer
     pagination_class = Pagination
     
@@ -92,7 +92,7 @@ class AuthorTrackListView(generics.ListAPIView):
     pagination_class = Pagination
     
     def get_queryset(self):
-        return models.Track.objects.filter(user__id=self.kwargs.get('pk'))
+        return models.Track.objects.filter(user__id=self.kwargs.get('pk'), album__private=False, private=False)
     
 class StreamFileView(views.APIView):
     def set_play(self, track):

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from . import models
 from ..base import services
-
+from ..oauth.serializers import AuthorSerializer
 class BaseSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
 
@@ -27,6 +27,7 @@ class AlbumSerializer(BaseSerializer):
 class CreateAuthorSerializer(BaseSerializer):
     plays_count = serializers.IntegerField(read_only=True)
     dowload = serializers.IntegerField(read_only=True)
+    user = AuthorSerializer(read_only=True)
     
     class Meta:
         model = models.Track
@@ -40,10 +41,15 @@ class CreateAuthorSerializer(BaseSerializer):
             'create_at',
             'plays_count',
             'dowload',
-            'license'
+            'license',
+            'cover',
+            'private',
+            'user'
         )
+        
     def update(self, instance, validated_data):
         services.delete_old_file(instance.cover.path)
+        services.delete_old_file(instance.file.path)
         return super().update(instance, validated_data)
     
     
@@ -51,12 +57,24 @@ class AuthorTracksSerializer(CreateAuthorSerializer):
     license = LicenseSerializer()
     genre = GenreSerializer(many=True)
     album = AlbumSerializer()
+    user = AuthorSerializer()
+
     
     
 class CreatePlayListSerializer(serializers.ModelSerializer):
+    tracks_id = serializers.PrimaryKeyRelatedField(
+        write_only=True, many=True,queryset=models.Track.objects.filter(private=False, album__private=False)
+    )
     class Meta:
         model = models.PlayList
-        fields = ('id', 'title', 'cover', 'tracks')
+        fields = ('id', 'title', 'cover', 'tracks', 'tracks_id')
+    def create(self, validated_data):
+        tracksId = validated_data.pop('tracks_id')
+        playlist = models.PlayList.objects.create(**validated_data)
+        playlist.save()
+        
+        if tracksId:
+            playlist.tracks.set(tracksId)
     def update(self, instance, validated_data):
         services.delete_old_file(instance.cover.path)
         return super().update(instance, validated_data)

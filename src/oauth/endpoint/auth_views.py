@@ -8,6 +8,8 @@ from ..services import google, spotify
 from ..services.base_auth import create_token
 from social_django.utils import psa
 from .. import models
+from google.auth.transport import requests
+from google.oauth2 import id_token
 
 
 
@@ -17,30 +19,12 @@ def google_login(request):
 def spotify_login(request):
     return render(request, 'oauth/spotify_login.html')
 
-@api_view(['POST']) 
+@api_view(['GET']) 
 def google_auth(req):
-    google_data = serializers.GoogleAuth(data=req.data)
-    if google_data.is_valid():
-        token = google.check_google_auth(google_data.data)
-        return Response(token)
-    else:
-        return AuthenticationFailed(code=403, detail='Bad data Google')
-
+    token = google.exchange_authentication_code_to_auth(code=req.GET.get('code'))
+    return Response(token)
+ 
 @api_view(['GET'])
 def spotify_auth(request):
     token = spotify.spotify_auth(request.query_params.get('code'))
     return Response(token)
-
-
-@psa('social:complete')
-def complete_google_auth(request, backend):
-    user = request.backend.do_auth(request.GET.get('access_token'), backend=backend)
-    if user:
-        print(user.email)
-        user2, _ = models.AuthUser.objects.get_or_create(email=user.email)
-        token = create_token(user2.id)
-        return Response({
-            'accessToken': token
-        })
-    else:
-        raise AuthenticationFailed(code=403, detail='Invalid token')

@@ -9,6 +9,9 @@
   <body>
     
     <h2>Google Login</h2>
-    <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-danger btn-lg">Let's check out</a>
+    
+    <a 
+    href="https://accounts.google.com/o/oauth2/v2/auth?client_id=702350934784-4dp2n71aj211r8ntti7r7aa8finnrt9n.apps.googleusercontent.com&redirect_uri=http://localhost:8000/google-callback/&response_type=code&scope=email+profile" 
+    class="btn btn-danger btn-lg">Let's check out</a>
   </body>
 </html>
