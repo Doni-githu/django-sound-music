@@ -1,5 +1,5 @@
 import os
-from django.core.exceptions import *
+from django.core.exceptions import ValidationError
 
 def get_path_upload_avatar(instance, file):
     return f'avatar/user_{instance.id}/{file}'

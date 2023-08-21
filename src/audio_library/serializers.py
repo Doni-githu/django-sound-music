@@ -52,7 +52,6 @@ class CreateAuthorSerializer(BaseSerializer):
         services.delete_old_file(instance.file.path)
         return super().update(instance, validated_data)
     
-    
 class AuthorTracksSerializer(CreateAuthorSerializer):
     license = LicenseSerializer()
     genre = GenreSerializer(many=True)
@@ -81,3 +80,19 @@ class CreatePlayListSerializer(serializers.ModelSerializer):
     
 class PlayListSerializer(CreatePlayListSerializer):
     tracks = AuthorTracksSerializer(many=True, read_only=True)
+    
+    
+class CommentAuthorSerializer(serializers.ModelSerializer):
+    track = AuthorTracksSerializer()
+    
+    class Meta:
+        model = models.Comment
+        fields = ('id', 'track', 'text')
+        
+        
+class CommentSerializer(serializers.ModelSerializer):
+    user = AuthorSerializer()
+    track = AuthorTracksSerializer()
+    class Meta:
+        model = models.Comment
+        fields = ('id', 'text', 'user', 'track', 'create_at')

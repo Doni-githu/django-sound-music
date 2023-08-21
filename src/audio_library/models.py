@@ -58,6 +58,7 @@ class Track(models.Model):
     user_of_likes = models.ManyToManyField(AuthUser, related_name="likes_of_tracks")
     private = models.BooleanField(default=False)
     
+    
     def __str__(self):
         return f'{self.user} - {self.title}'
 

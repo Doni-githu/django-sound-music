@@ -4,14 +4,18 @@ from django.http.response import FileResponse
 from rest_framework import generics, viewsets, parsers, views
 from . import serializers, models
 from ..base.permissions import IsAuthor
+from rest_framework.permissions import IsAuthenticated
 from ..base.services import delete_old_file
 from ..base.classes import MixidSerializer, Pagination
 import os
 from rest_framework.mixins import status
+from django_filters.rest_framework import DjangoFilterBackend
 
 class GenreView(generics.ListCreateAPIView):
     queryset = models.Genre.objects.all()
     serializer_class = serializers.GenreSerializer
+    permission_classes = [IsAuthenticated]
+    
 
         
 class LicenseView(viewsets.ModelViewSet):
@@ -60,6 +64,7 @@ class TracksView(MixidSerializer, viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
         
     def perform_destroy(self, instance):
+        delete_old_file(instance.cover.path)
         delete_old_file(instance.file.path)
         instance.delete()
         
@@ -82,14 +87,18 @@ class PlayListView(MixidSerializer, viewsets.ModelViewSet):
         instance.delete()
         
 class TracksListView(generics.ListAPIView):
-    queryset = models.Track.objects.filter(album__private=False, private=False)
+    queryset = models.Track.objects.filter(private=False)
     serializer_class = serializers.AuthorTracksSerializer
     pagination_class = Pagination
-    
-    
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['title', 'user__display_name', 'album__name', 'genre__name']
+
 class AuthorTrackListView(generics.ListAPIView):
     serializer_class = serializers.AuthorTracksSerializer
     pagination_class = Pagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['title', 'album__name', 'genre__name']
+    permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
         return models.Track.objects.filter(user__id=self.kwargs.get('pk'), album__private=False, private=False)
@@ -122,3 +131,23 @@ class DowloadTrackView(views.APIView):
         return Response({
                 "detail": "Not found"
             }, status=status.HTTP_404_NOT_FOUND)
+        
+        
+class CommentAuthorView(viewsets.ModelViewSet):
+    serializer_class = serializers.CommentAuthorSerializer
+    permission_classes = [IsAuthor]
+    
+    def get_queryset(self):
+        return models.Comment.objects.filter(user=self.request.user)
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+        
+        
+class CommentView(viewsets.ModelViewSet):
+    serializer_class = serializers.CommentSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return models.Comment.objects.filter(track__id=self.kwargs.get('pk'))
+    

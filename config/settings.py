@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     
     
     'django.contrib.sites',
-    'social_django'
+    'django_filters'
 ]
 
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
@@ -46,17 +46,6 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-SOCIALACCCOUNT_PROVIDERS = {
-    "google": {
-        "SCOPE": [
-            "profile",
-            "email"
-        ],
-        "AUTH_PARAMS": {
-            "access_type": "online"
-        }
-    }
-}
 
 
 MIDDLEWARE = [
@@ -150,7 +139,6 @@ SECRET_KEY = "doni12312"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
 AUTHENITICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
-    "allauth.account.auth_backends.AuthenticationBackend"
 )
 
 LOGIN_REDIRECT_URL = "/"
@@ -167,7 +155,8 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': ('src.oauth.services.auth_backend.AuthBackend',),
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny'
-    ]
+    ],
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }
 
 

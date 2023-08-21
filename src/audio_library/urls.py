@@ -22,6 +22,9 @@ urlpatterns = [
     
     path("playlist/", views.PlayListView.as_view({'get': 'list', 'post': 'create'})),
     path("playlist/<int:pk>/", views.PlayListView.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}), name=""),
-
     
+    path('comments/', views.CommentAuthorView.as_view({'get': 'list', 'post': 'create'})),
+    path('comments/<int:pk>/', views.CommentAuthorView.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
+    
+    path('comments_by_track/<int:pk>/', views.CommentView.as_view({'get': 'list'})),
 ]
